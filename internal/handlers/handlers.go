@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -36,22 +37,12 @@ func HandleUpload(res http.ResponseWriter, req *http.Request) {
 
 	res.Header().Set("Content-Type", "text/plain; charset=utf-8")
 	if _, err := res.Write(converted); err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
+		log.Printf("handle upload: write response: %v", err)
 		return
 	}
 
 }
 
 func HandleMain(res http.ResponseWriter, req *http.Request) {
-	data, err := os.ReadFile(htmlFileName)
-	if err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	res.Header().Set("Content-Type", "text/html; charset=utf-8")
-	if _, err := res.Write(data); err != nil {
-		http.Error(res, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	http.ServeFile(res, req, htmlFileName)
 }
